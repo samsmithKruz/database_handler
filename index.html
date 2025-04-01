@@ -6,9 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database Handler Docs</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: {
+                    sans: ['Roboto', 'sans-serif'],
+                },
+            },
+        };
+
+        function updateActiveLink() {
+            const hash = window.location.hash; 
+            document.querySelectorAll('a').forEach(link => {
+                link.classList.remove('active-link');
+                if (link.getAttribute('href') === hash) {
+                    link.classList.add('active-link');
+                }
+            });
+        }
+
+        window.addEventListener('load', updateActiveLink);
+        window.addEventListener('hashchange', updateActiveLink);
+    </script>
     <style>
         html {
             scroll-behavior: smooth;
+        }
+
+        /* Style the active anchor link */
+        .active-link {
+            background-color: #1f2937;
         }
     </style>
 </head>
@@ -22,7 +50,7 @@
         <aside class="w-64 bg-gray-900 text-white p-5 fixed h-full">
             <h2 class="text-2xl font-bold mb-4">Database Handler</h2>
             <nav class="space-y-3">
-                <a href="#introduction" class="block py-2 px-3 rounded bg-gray-800">Introduction</a>
+                <a href="#introduction" class="block py-2 px-3 rounded hover:bg-gray-800">Introduction</a>
                 <a href="#installation" class="block py-2 px-3 rounded hover:bg-gray-700">Installation</a>
                 <a href="#usage" class="block py-2 px-3 rounded hover:bg-gray-700">Usage</a>
                 <a href="#supported-databases" class="block py-2 px-3 rounded hover:bg-gray-700">Supported Databases</a>
