@@ -138,7 +138,7 @@ class RedisDatabase {
 
     public function zrem($zset, $member)
     {
-        return $this->redis->zrem($zset, [$member]);
+        return $this->redis->zrem($zset, $member);
     }
 
     public function zrange($zset, $start, $stop, $withScores = false)
