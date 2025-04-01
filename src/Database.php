@@ -5,6 +5,8 @@ namespace SamsmithKruz\Database;
 use Exception;
 use SamsmithKruz\Database\Drivers\{
     MySQLDatabase,
+    MongoDBDatabase,
+    RedisDatabase,
     PostgreSQLDatabase
 };
 
@@ -49,9 +51,12 @@ class Database
                 $this->handler = new PostgreSQLDatabase($config);
                 break;
 
-            // case 'mongodb':
-            //     $this->handler = new MongoDBDatabase($config);
-            //     break;
+            case 'mongodb':
+                $this->handler = new MongoDBDatabase($config);
+                break;
+            case 'redis':
+                $this->handler = new RedisDatabase($config);
+                break;
 
             default:
                 throw new Exception("Driver {$config['driver']} is not supported.");

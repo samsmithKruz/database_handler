@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Handler Docs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Container -->
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white p-5 fixed h-full">
+            <h2 class="text-2xl font-bold mb-4">Database Handler</h2>
+            <nav class="space-y-3">
+                <a href="#introduction" class="block py-2 px-3 rounded bg-gray-800">Introduction</a>
+                <a href="#installation" class="block py-2 px-3 rounded hover:bg-gray-700">Installation</a>
+                <a href="#usage" class="block py-2 px-3 rounded hover:bg-gray-700">Usage</a>
+                <a href="#supported-databases" class="block py-2 px-3 rounded hover:bg-gray-700">Supported Databases</a>
+                <a href="#contributing" class="block py-2 px-3 rounded hover:bg-gray-700">Contributing</a>
+                <a href="#license" class="block py-2 px-3 rounded hover:bg-gray-700">License</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="ml-64 p-10 flex-1">
+            <section id="introduction" class="mb-10">
+                <h1 class="text-3xl font-bold mb-3">Introduction</h1>
+                <p class="text-gray-700">
+                    Database Handler is a powerful and flexible PHP library that provides a unified interface
+                    for working with both SQL and NoSQL databases. It is designed to simplify database interactions
+                    by offering a consistent API, making it easier to switch between different database types
+                    without rewriting large portions of code.
+                </p>
+
+                <h2 class="text-2xl font-semibold mt-6 mb-2">Why Use Database Handler?</h2>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li>
+                        <strong>Unified API:</strong> Provides a consistent way to interact with MySQL, PostgreSQL,
+                        MongoDB, and Redis.
+                    </li>
+                    <li>
+                        <strong>Ease of Use:</strong> Offers simple and intuitive methods for querying and managing
+                        databases.
+                    </li>
+                    <li>
+                        <strong>Flexibility:</strong> Supports multiple database drivers, allowing seamless transitions
+                        between SQL and NoSQL.
+                    </li>
+                    <li>
+                        <strong>Optimized Performance:</strong> Uses best practices for database queries to ensure
+                        efficiency.
+                    </li>
+                    <li>
+                        <strong>Built-in Error Handling:</strong> Provides structured error messages to help developers
+                        debug issues quickly.
+                    </li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold mt-6 mb-2">Who Should Use This?</h2>
+                <p class="text-gray-700">
+                    Whether you're a beginner or an experienced PHP developer, this library is useful for:
+                </p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li>Developers working on projects that require multiple database types.</li>
+                    <li>Teams that want to standardize their database interactions.</li>
+                    <li>Projects that need a lightweight yet efficient database abstraction layer.</li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold mt-6 mb-2">Supported Databases</h2>
+                <p class="text-gray-700">
+                    The library currently supports the following databases:
+                </p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li><strong>MySQL</strong> - A widely used relational database management system.</li>
+                    <li><strong>PostgreSQL</strong> - A powerful, open-source object-relational database.</li>
+                    <li><strong>MongoDB</strong> - A document-oriented NoSQL database for high-performance applications.
+                    </li>
+                    <li><strong>Redis</strong> - An in-memory data structure store, useful for caching and fast lookups.
+                    </li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold mt-6 mb-2">Getting Started</h2>
+                <p class="text-gray-700">
+                    To start using Database Handler, follow the <a href="#installation"
+                        class="text-blue-500 underline">Installation</a> section below.
+                </p>
+            </section>
+
+
+            <section id="installation" class="mb-10">
+                <h2 class="text-2xl font-bold mb-3">Installation</h2>
+
+                <p class="text-gray-700">
+                    Database Handler is available as a Composer package, making it easy to install and integrate into
+                    your PHP project.
+                </p>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Step 1: Install via Composer</h3>
+                <p class="text-gray-700">
+                    Run the following command in your terminal to install the package:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+composer require samsmithkruz/database-handler
+                </pre>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Step 2: Autoload the Library</h3>
+                <p class="text-gray-700">
+                    Make sure to include Composer's autoloader in your project:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+require 'vendor/autoload.php';
+                </pre>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Step 3: Configuration</h3>
+                <p class="text-gray-700">
+                    Before using the library, configure your database connection settings. Below is an example
+                    configuration for MySQL:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+$config = [
+    'driver'   => 'mysql',
+    'host'     => '127.0.0.1',
+    'database' => 'your_database',
+    'username' => 'your_username',
+    'password' => 'your_password',
+    'charset'  => 'utf8mb4',
+    'collation'=> 'utf8mb4_unicode_ci',
+    'options'  => [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]
+];
+                </pre>
+
+                <p class="text-gray-700 mt-2">
+                    Replace the values with your actual database credentials.
+                </p>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Step 4: Initialize the Database Handler</h3>
+                <p class="text-gray-700">
+                    Create a new instance of the database handler and pass in your configuration:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+use SamsmithKruz\Database\Database;
+
+$database = new Database($config);
+                </pre>
+
+                <p class="text-gray-700 mt-2">
+                    Your database handler is now ready to use!
+                </p>
+            </section>
+
+
+            <section id="usage" class="mb-10">
+                <h2 class="text-2xl font-bold mb-3">Usage</h2>
+
+                <p class="text-gray-700">
+                    The Database Handler library provides a simple and consistent interface for working with both SQL
+                    and NoSQL databases. Here's an example of how to use the library to interact with SQL (MySQL) and
+                    NoSQL (MongoDB) databases.
+                </p>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Example: Connecting to MySQL</h3>
+                <p class="text-gray-700">
+                    First, connect to your database using the `Database` class. In this case, we'll show how to connect
+                    to a MySQL database.
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+use SamsmithKruz\Database\Database;
+
+$config = [
+'host'     => '127.0.0.1',
+'driver'   => 'mysql',
+'charset'  => 'utf8mb4',
+'username' => 'root',
+'password' => '',
+'database' => 'test_db'
+];
+
+$db = new Database($config);
+                </pre>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Performing Queries</h3>
+                <p class="text-gray-700">
+                    The `Database` class supports chaining methods to perform queries. Here's how to execute a SELECT
+                    query:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+$query = "SELECT * FROM users WHERE status = :status";
+$params = ['status' => 'active'];
+
+// Execute the query, bind parameters, and get the result set
+$result = $db->query($query)
+    ->bind($params)
+    ->resultSet();
+
+foreach ($result as $row) {
+    echo $row['name'] . "&lt;br&gt;";
+}
+                </pre>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Inserting Data</h3>
+                <p class="text-gray-700">
+                    Insert data into a table with the following code, leveraging the same chaining approach:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+$query = "INSERT INTO users (name, email, status) VALUES (:name, :email, :status)";
+$params = [
+    'name'  => 'John Doe',
+    'email' => 'john.doe@example.com',
+    'status'=> 'active'
+];
+
+// Execute the insert operation
+$db->query($query)
+    ->bind($params)
+    ->execute();
+                </pre>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Updating Data</h3>
+                <p class="text-gray-700">
+                    Updating records follows a similar structure:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+$query = "UPDATE users SET status = :status WHERE email = :email";
+$params = [
+    'status' => 'inactive',
+    'email'  => 'john.doe@example.com'
+];
+
+// Execute the update operation
+$db->query($query)
+    ->bind($params)
+    ->execute();
+                </pre>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Working with NoSQL (MongoDB Example)</h3>
+                <p class="text-gray-700">
+                    The library also supports NoSQL databases. Here's how to use MongoDB with the handler.
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+use SamsmithKruz\Database\Drivers\MongoDBDatabase;
+
+$mongoConfig = [
+    'driver'=> 'mongodb',
+    'uri'      => 'mongodb://127.0.0.1:27017',
+    'database' => 'test_db'
+];
+
+$mongoDB = new Database($mongoConfig);
+
+// Insert data into a MongoDB collection
+$data = [
+    'name' => 'Jane Doe',
+    'email' => 'jane.doe@example.com',
+    'status' => 'active'
+];
+
+$mongoDB->insert('users', $data);
+                </pre>
+
+                <h3 class="text-xl font-semibold mt-4 mb-2">Handling Errors</h3>
+                <p class="text-gray-700">
+                    To handle errors gracefully, you can use a try-catch block around your queries. Here's an example:
+                </p>
+                <pre class="bg-gray-800 text-white p-4 rounded">
+try {
+    $db->query("SELECT * FROM non_existent_table")->resultSet();
+} catch (\Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
+                </pre>
+
+                <p class="text-gray-700">
+                    This ensures that any errors (e.g., query failure, connection issues) are caught and handled
+                    appropriately.
+                </p>
+            </section>
+
+
+            <section id="supported-databases" class="mb-10">
+                <h2 class="text-2xl font-bold mb-3">Supported Databases</h2>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li>MySQL</li>
+                    <li>PostgreSQL</li>
+                    <li>MongoDB</li>
+                    <li>Redis</li>
+                </ul>
+            </section>
+
+            <section id="contributing" class="mb-10">
+                <h2 class="text-2xl font-bold mb-3">Contributing</h2>
+                <p class="text-gray-700">
+                    We welcome contributions to the Database Handler library! Whether you want to fix bugs, add
+                    features, or improve the documentation, your help is appreciated.
+                </p>
+                <p class="text-gray-700">
+                    Please follow these steps to contribute:
+                </p>
+                <ul class="list-disc pl-5 text-gray-700">
+                    <li>Fork the repository and create your branch (`git checkout -b feature-branch`).</li>
+                    <li>Make your changes and ensure they are properly tested.</li>
+                    <li>Commit your changes (`git commit -am 'Add new feature or fix bug'`).</li>
+                    <li>Push to the branch (`git push origin feature-branch`).</li>
+                    <li>Create a pull request to the main repository.</li>
+                </ul>
+                <p class="text-gray-700 mt-4">
+                    For further information on the contribution guidelines, please refer to the <strong><a
+                            href="CONTRIBUTING.md"
+                            class="text-blue-600 hover:text-blue-800">CONTRIBUTING.md</a></strong> file.
+                </p>
+                <p class="text-gray-700 mt-4">
+                    We look forward to your contributions!
+                </p>
+            </section>
+
+
+            <section id="license" class="mb-10">
+                <h2 class="text-2xl font-bold mb-3">License</h2>
+                <p class="text-gray-700">
+                    This project is licensed under the <strong>MIT License</strong>. You are free to use, modify, and
+                    distribute the code, subject to the terms of the license.
+                </p>
+                <p class="text-gray-700 mt-4">
+                    The MIT License is a permissive free software license, meaning that you can use this software for
+                    both personal and commercial purposes with minimal restrictions.
+                </p>
+                <p class="text-gray-700 mt-4">
+                    For the full details, please refer to the <strong><a href="LICENSE"
+                            class="text-blue-600 hover:text-blue-800">LICENSE</a></strong> file.
+                </p>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+
+</html>

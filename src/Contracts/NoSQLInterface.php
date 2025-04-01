@@ -86,7 +86,7 @@ interface NoSQLInterface
      * @param array $params Parameters for the query.
      * @return mixed Query result based on implementation.
      */
-    public function rawQuery(string $query, array $params = []);
+    public function rawQuery(string $collection, array $query = []): array;
 
     /**
      * Starts a transaction for databases that support transactions.
