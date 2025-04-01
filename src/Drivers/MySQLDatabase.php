@@ -2,91 +2,223 @@
 
 namespace SamsmithKruz\Database\Drivers;
 
+use SamsmithKruz\Database\Contracts\SQLInterface;
 use PDO;
 use PDOException;
-use SamsmithKruz\Database\Contracts\DatabaseHandlerInterface;
 
-class MySQLDatabase implements DatabaseHandlerInterface
+class MySQLDatabase implements SQLInterface
 {
-    private PDO $connection;
+    private PDO $pdo;
+    private \PDOStatement $stmt;
 
-    public function __construct(private array $config)
-    {
-        $this->connect();
-    }
-
-    public function connect(): void
+    public function __construct(array $config)
     {
         try {
-            $dsn = "mysql:host={$this->config['host']};dbname={$this->config['database']};port={$this->config['port']}";
-            $this->connection = new PDO($dsn, $this->config['username'], $this->config['password'], [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]);
+            // Establish the database connection using PDO
+            $dsn = "mysql:host={$config['host']};dbname={$config['dbname']};port={$config['port']}";
+            $this->pdo = new PDO($dsn, $config['user'], $config['pass']);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new \Exception("MySQL Connection Failed: " . $e->getMessage());
+            throw new \Exception("Database connection failed: " . $e->getMessage());
         }
     }
 
-    public function query(string $query, array $params = []): mixed
+    public function query(string $sql): SQLInterface
     {
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute($params);
-        return $stmt;
+        // Prepare the SQL query
+        try {
+            $this->stmt = $this->pdo->prepare($sql);
+        } catch (PDOException $e) {
+            throw new \Exception("Query preparation failed: " . $e->getMessage());
+        }
+        return $this;
     }
 
-    public function insert(string $table, array $data): bool
+    public function bind(string $param, $value, $type = null): SQLInterface
     {
-        $columns = implode(", ", array_keys($data));
-        $placeholders = implode(", ", array_fill(0, count($data), "?"));
-        $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+        try{
+        if (is_null($type)) {
+            switch (true) {
+                case is_int($value):
+                    $type = PDO::PARAM_INT;
+                    break;
+                case is_bool($value):
+                    $type = PDO::PARAM_BOOL;
+                    break;
+                case is_null($value):
+                    $type = PDO::PARAM_NULL;
+                    break;
+                default:
+                    $type = PDO::PARAM_STR;
+            }
+        }
 
-        return $this->query($sql, array_values($data))->rowCount() > 0;
+        $this->stmt->bindValue($param, $value, $type);
+        } catch (PDOException $e) {
+            throw new \Exception("Binding parameter failed: " . $e->getMessage());
+        }
+        // Bind the parameter to the prepared statement
+        return $this;
     }
 
-    public function update(string $table, array $data, array $conditions): bool
+    public function execute(): bool
     {
-        $setClause = implode(", ", array_map(fn($key) => "$key = ?", array_keys($data)));
-        $whereClause = implode(" AND ", array_map(fn($key) => "$key = ?", array_keys($conditions)));
-
-        $sql = "UPDATE $table SET $setClause WHERE $whereClause";
-        return $this->query($sql, array_merge(array_values($data), array_values($conditions)))->rowCount() > 0;
+        // Execute the prepared statement
+        try {
+            return $this->stmt->execute();
+        } catch (PDOException $e) {
+            throw new \Exception("Execution failed: " . $e->getMessage());
+        }
     }
 
-    public function delete(string $table, array $conditions): bool
+    public function resultSet(): array
     {
-        $whereClause = implode(" AND ", array_map(fn($key) => "$key = ?", array_keys($conditions)));
-        $sql = "DELETE FROM $table WHERE $whereClause";
-
-        return $this->query($sql, array_values($conditions))->rowCount() > 0;
+        // Fetch all results as an associative array
+        try {
+            return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            throw new \Exception("Fetching result set failed: " . $e->getMessage());
+        }
     }
 
-    public function select(string $table, array $columns = ['*'], array $conditions = []): array
+    public function single(): object
     {
-        $columnsString = implode(", ", $columns);
-        $whereClause = $conditions ? "WHERE " . implode(" AND ", array_map(fn($key) => "$key = ?", array_keys($conditions))) : "";
-        $sql = "SELECT $columnsString FROM $table $whereClause";
-
-        return $this->query($sql, array_values($conditions))->fetchAll();
+        // Fetch a single result as an object
+        try {
+            return $this->stmt->fetch(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            throw new \Exception("Fetching single result failed: " . $e->getMessage());
+        }
     }
 
-    public function beginTransaction(): void
+    public function rowCount(): int
     {
-        $this->connection->beginTransaction();
+        // Return the number of rows affected by the last query
+        try {
+            return $this->stmt->rowCount();
+        } catch (PDOException $e) {
+            throw new \Exception("Fetching row count failed: " . $e->getMessage());
+        }
+    }
+
+    public function beginTransaction(string $isolationLevel = "SERIALIZABLE"): void
+    {
+        // Start a database transaction
+        try {
+            $this->pdo->beginTransaction();
+            $this->pdo->exec("SET TRANSACTION ISOLATION LEVEL $isolationLevel");
+        } catch (PDOException $e) {
+            throw new \Exception("Starting transaction failed: " . $e->getMessage());
+        }
     }
 
     public function commitTransaction(): void
     {
-        $this->connection->commit();
+        // Commit the current transaction
+        try {
+            $this->pdo->commit();
+        } catch (PDOException $e) {
+            throw new \Exception("Commit failed: " . $e->getMessage());
+        }
     }
 
     public function rollbackTransaction(): void
     {
-        $this->connection->rollBack();
+        // Rollback the current transaction
+        try {
+            $this->pdo->rollBack();
+        } catch (PDOException $e) {
+            throw new \Exception("Rollback failed: " . $e->getMessage());
+        }
     }
 
-    public function close(): void
+    public function errorInfo(): array
     {
-        $this->connection = null;
+        // Retrieve error information for the last operation
+        return $this->stmt->errorInfo();
+    }
+
+    public function lastInsertId(): string
+    {
+        // Return the last insert ID
+        try {
+            return $this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            throw new \Exception("Fetching last insert ID failed: " . $e->getMessage());
+        }
+    }
+
+    public function beginSavepoint(string $name): void
+    {
+        // Begin a savepoint within the transaction
+        try {
+            $this->pdo->exec("SAVEPOINT $name");
+        } catch (PDOException $e) {
+            throw new \Exception("Begin savepoint failed: " . $e->getMessage());
+        }
+    }
+
+    public function rollbackSavepoint(string $name): void
+    {
+        // Rollback to a savepoint within the transaction
+        try {
+            $this->pdo->exec("ROLLBACK TO SAVEPOINT $name");
+        } catch (PDOException $e) {
+            throw new \Exception("Rollback to savepoint failed: " . $e->getMessage());
+        }
+    }
+
+    public function releaseSavepoint(string $name): void
+    {
+        // Release a savepoint within the transaction
+        try {
+            $this->pdo->exec("RELEASE SAVEPOINT $name");
+        } catch (PDOException $e) {
+            throw new \Exception("Release savepoint failed: " . $e->getMessage());
+        }
+    }
+
+    public function getVersion(): string
+    {
+        // Get the version of the database
+        try {
+            return $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+        } catch (PDOException $e) {
+            throw new \Exception("Getting version failed: " . $e->getMessage());
+        }
+    }
+
+    public function lastErrorCode(): string
+    {
+        // Return the last error code for the connection
+        return $this->pdo->errorCode();
+    }
+
+    public function lastErrorMessage(): string
+    {
+        // Return the last error message for the connection
+        $errorInfo = $this->pdo->errorInfo();
+        return $errorInfo[2] ?? '';
+    }
+
+    public function fetchColumn(string $sql)
+    {
+        // Execute a query and fetch the first column of the first row
+        try {
+            $stmt = $this->pdo->query($sql);
+            return $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            throw new \Exception("Fetching column failed: " . $e->getMessage());
+        }
+    }
+
+    public function fetchRow(): array
+    {
+        // Fetch a single row from the result set
+        try {
+            return $this->stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new \Exception("Fetching row failed: " . $e->getMessage());
+        }
     }
 }
