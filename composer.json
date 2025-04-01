@@ -1,0 +1,18 @@
+{
+    "name": "samsmithkruz/database-handler",
+    "description": "A reusable database handler supporting SQL & NoSQL.",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "SamsmithKruz\\Database\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4",
+        "ext-pdo": "*",
+        "mongodb/mongodb": "^1.12"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
